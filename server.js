@@ -4,11 +4,6 @@ const mysql = require('mysql2');
 
 const PORT = process.env.PORT || 3001;
 
-
-// Express middleware
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
-
 // Connect to database
 const db = mysql.createConnection(
   {
@@ -17,13 +12,289 @@ const db = mysql.createConnection(
     user: 'root',
     // TODO: Add MySQL password here
     password: 'taSh2.0!',
-    database: 'employees_db'
+    database: 'employeeTracker_db'
   },
   console.log(`Connected to the Employee Structure database.`)
 );
 
+inquirer
+  .prompt([
+    {
+      type: 'list',
+      name: 'initialPrompt',
+      message: 'What would you like to do?',
+      choices: [
+                'View All Employees',
+                'Add Employee',
+                // 'Delete Employee',
+                'View All Roles',
+                'Add Role',
+                // 'Delete Role',
+                // 'Update Employee Managers',
+                // 'View Employees by Manager',
+                // 'View Employees by Department',
+                'Update Employee Role',
+                'View All Departments',
+                'Add Department',
+                // 'Delete Department',
+                // 'View Total Utilized Budget per Department',
+                'Quit'
+               ],
+    },
+    {
+      type: 'input',
+      name: 'newDep',
+      message: 'What is the name of the new department?',
+    },
+    {
+      type: 'input',
+      name: 'newRole',
+      message: 'What is the name of the new role?',
+    },
+    {
+      type: 'input',
+      name: 'newSalary',
+      message: 'What is the salary of this new role?',
+    },
+    {
+      type: 'list',
+      name: 'newRoleDep',
+      message: 'What department does this new role belong to?',
+      choices: [
+                'Engineering',
+                'Sales',
+                'Assembly',
+                'Service'
+               ],
+    },
+    {
+      type: 'input',
+      name: 'newFirstName',
+      message: 'What is the new employee\'s first name?',
+    },
+    {
+      type: 'input',
+      name: 'newLastName',
+      message: 'What is the new employee\'s last name?',
+    },
+    {
+      type: 'list',
+      name: 'newEmpRole',
+      message: 'What is the new employee\'s role?',
+      choices: [
+                'Mechanical Engineer',
+                'Electrical Engineer',
+                'Test Engineering',
+                'Engineering Lead',
+                'Government Contracts',
+                'Private Contracts',
+                'Hydraulic Assembly',
+                'Electrical Assembly',
+                'Assembly Lead',
+                'Customer Service',
+                'Financial Planning',
+                'Service Technician'
+               ],
+    },
+    {
+      type: 'list',
+      name: 'newEmpManager',
+      message: 'Who is the new employee\'s manager?',
+      choices: [
+                'Engineering Lead',
+                'Assembly Lead'
+               ],
+    },
+    {
+      type: 'list',
+      name: 'empRoleUpdate',
+      message: 'Which employee\'s role would you like to update?',
+      choices: [
+                '1',
+                '2',
+                '3',
+                '4',
+                '5',
+                '6',
+                '7',
+                '8',
+                '9',
+                '10',
+                '11',
+                '12',
+                '13',
+                '14',
+                '15',
+                '16',
+                '17',
+                '18',
+                '19',
+                '20',
+                '21',
+                '22',
+                '23',
+                '24'
+               ],
+    },
+    {
+      type: 'list',
+      name: 'empRoleAssign',
+      message: 'Which role do you want to assign to the selected employee?',
+      choices: [
+                'Mechanical Engineer',
+                'Electrical Engineer',
+                'Test Engineering',
+                'Engineering Lead',
+                'Government Contracts',
+                'Private Contracts',
+                'Hydraulic Assembly',
+                'Electrical Assembly',
+                'Assembly Lead',
+                'Customer Service',
+                'Financial Planning',
+                'Service Technician'
+               ]
+    },
+    // {
+    //   type: 'list',
+    //   name: 'empDel',
+    //   message: 'Which employee would you like to remove?',
+    //   choices: [
+    //             '1',
+    //             '2',
+    //             '3',
+    //             '4',
+    //             '5',
+    //             '6',
+    //             '7',
+    //             '8',
+    //             '9',
+    //             '10',
+    //             '11',
+    //             '12',
+    //             '13',
+    //             '14',
+    //             '15',
+    //             '16',
+    //             '17',
+    //             '18',
+    //             '19',
+    //             '20',
+    //             '21',
+    //             '22',
+    //             '23',
+    //             '24'
+    //            ],
+    // },
+    // {
+    //   type: 'list',
+    //   name: 'roleDel',
+    //   message: 'Which role do you want to remove?',
+    //   choices: [
+    //             'Mechanical Engineer',
+    //             'Electrical Engineer',
+    //             'Test Engineering',
+    //             'Engineering Lead',
+    //             'Government Contracts',
+    //             'Private Contracts',
+    //             'Hydraulic Assembly',
+    //             'Electrical Assembly',
+    //             'Assembly Lead',
+    //             'Customer Service',
+    //             'Financial Planning',
+    //             'Service Technician'
+    //            ]
+    // },
+    // {
+    //   type: 'list',
+    //   name: 'empUpdateManag',
+    //   message: 'Which employee would you like to change the management status of?',
+    //   choices: [
+    //             '1',
+    //             '2',
+    //             '3',
+    //             '4',
+    //             '5',
+    //             '6',
+    //             '7',
+    //             '8',
+    //             '9',
+    //             '10',
+    //             '11',
+    //             '12',
+    //             '13',
+    //             '14',
+    //             '15',
+    //             '16',
+    //             '17',
+    //             '18',
+    //             '19',
+    //             '20',
+    //             '21',
+    //             '22',
+    //             '23',
+    //             '24'
+    //            ],
+    // },
+    // {
+    //   type: 'list',
+    //   name: 'managView',
+    //   message: 'Which manager\'s subordinates would you like to view?',
+    //   choices: [
+    //             'Engineering Lead',
+    //             'Assembly Lead'
+    //            ],
+    // },
+    // {
+    //   type: 'list',
+    //   name: 'depView',
+    //   message: 'What department would you like to view?',
+    //   choices: [
+    //             'Engineering',
+    //             'Sales',
+    //             'Assembly',
+    //             'Service'
+    //            ],
+    // },
+    // {
+    //   type: 'list',
+    //   name: 'deleteDep',
+    //   message: 'Which department would you like to remove?',
+    //   choices: [
+    //             'Engineering',
+    //             'Sales',
+    //             'Assembly',
+    //             'Service'
+    //            ],
+    // },
+    // {
+    //   type: 'list',
+    //   name: 'depUtilization',
+    //   message: 'Which department would you like to see the overall utilized budget of?',
+    //   choices: [
+    //             'Engineering',
+    //             'Sales',
+    //             'Assembly',
+    //             'Service'
+    //            ],
+    // },
+  ]);
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
 // NEEDS ADJUSTED CODE FOR CRUD PROGRAMS. BELOW FOR REFERENCE
 
 
@@ -129,30 +400,3 @@ const db = mysql.createConnection(
 // app.listen(PORT, () => {
 //   console.log(`Server running on port ${PORT}`);
 // });
-
-
-
-
-// NEEDS ADJUSTED CODE FOR INQUIRER PROMPTS. BELOW FOR REFERENCE
-
-
-// inquirer
-//   .prompt([
-//     {
-//       type: 'input',
-//       name: 'name',
-//       message: 'What is your name?',
-//     },
-//     {
-//       type: 'checkbox',
-//       message: 'What languages do you know?',
-//       name: 'stack',
-//       choices: ['HTML', 'CSS', 'JavaScript', 'MySQL'],
-//     },
-//     {
-//       type: 'list',
-//       message: 'What is your preferred method of communication?',
-//       name: 'contact',
-//       choices: ['email', 'phone', 'telekinesis'],
-//     },
-//   ])
