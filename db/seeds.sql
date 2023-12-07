@@ -19,17 +19,17 @@ VALUES  ("Mechanical Engineer", 80000, 1),
         ("Service Technician", 75000, 4);
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUES  ("Anthony", "Maddatu", 1, 4),
-        ("Beserta", "Qorri", 2, 4),
-        ("Blake", "Skor", 3, 4),
+VALUES  ("Anthony", "Maddatu", 1, null),
+        ("Beserta", "Qorri", 2, null),
+        ("Blake", "Skor", 3, null),
         ("Charles", "Gillespie", 4, null),
         ("Christopher", "Rice", 5, null),
         ("Christopher", "Tello", 6, null),
-        ("Dakota", "Blanchard", 7, 9),
-        ("Evan", "Bennett", 7, 9),
-        ("Jacob", "Ofsuryk", 7, 9),
-        ("Jeremy", "Doran", 8, 9),
-        ("Jon", "White", 8, 9),
+        ("Dakota", "Blanchard", 7, null),
+        ("Evan", "Bennett", 7, null),
+        ("Jacob", "Ofsuryk", 7, null),
+        ("Jeremy", "Doran", 8, null),
+        ("Jon", "White", 8, null),
         ("Lee", "Warrick", 9, null),
         ("Lewis", "Sinche", 10, null),
         ("Louis", "Taylor", 11, null),
@@ -38,10 +38,35 @@ VALUES  ("Anthony", "Maddatu", 1, 4),
         ("Michael", "Krahn", 12, null),
         ("Nicole", "Choinier-Kroeker", 9, null),
         ("Remi", "Goddu", 4, null),
-        ("Robert", "Totten", 1, 4),
-        ("Ronald", "Martin", 2, 4),
-        ("Sam", "Rose", 3, 4),
+        ("Robert", "Totten", 1, null),
+        ("Ronald", "Martin", 2, null),
+        ("Sam", "Rose", 3, null),
         ("Sanjida", "Nawrin", 6, null),
         ("Shantrell", "Jenkins", 10, null);
 
+UPDATE employee(manager_id)
 
+
+
+
+-- -- Update employees with correct manager_id values
+-- UPDATE employee
+-- SET manager_id = CASE
+--     WHEN first_name = 'Anthony' AND last_name = 'Maddatu' THEN (SELECT id FROM employee WHERE first_name = 'Remi' AND last_name = 'Goddu')
+--     WHEN first_name = 'Beserta' AND last_name = 'Qorri' THEN (SELECT id FROM employee WHERE first_name = 'Remi' AND last_name = 'Goddu')
+--     WHEN first_name = 'Blake' AND last_name = 'Skor' THEN (SELECT id FROM employee WHERE first_name = 'Remi' AND last_name = 'Goddu')
+--     -- Add more cases as needed for other employees
+--     ELSE NULL
+-- END;
+
+
+
+
+-- UPDATE [LOW_PRIORITY] [IGNORE] table_reference
+--     SET assignment_list
+--     [WHERE where_condition]
+--     [ORDER BY ...]
+--     [LIMIT row_count]
+
+-- value:
+--     {expr | DEFAULT}
