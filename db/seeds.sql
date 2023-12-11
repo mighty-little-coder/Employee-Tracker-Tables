@@ -5,18 +5,18 @@ VALUES  ("Engineering"),
         ("Service");
 
 INSERT INTO role (title, salary, department_id)
-VALUES  ("Mechanical Engineer", 80000, 1),   --1
-        ("Electrical Engineer", 95000, 1),   --2
-        ("Test Engineering", 90000, 1),      --3
-        ("Engineering Lead", 140000, 1),     --4 --M
-        ("Government Contracts", 120000, 2), --5
-        ("Private Contracts", 110000, 2),    --6
-        ("Hydraulic Assembly", 55000, 3),    --7
-        ("Electrical Assembly", 55000, 3),   --8
-        ("Assembly Lead", 75000, 3),         --9 --M
-        ("Customer Service", 80000, 4),      --10
-        ("Financial Planning", 80000, 4),    --11
-        ("Service Technician", 75000, 4);    --12
+VALUES  ("Mechanical Engineer", 80000, 1),
+        ("Electrical Engineer", 95000, 1),
+        ("Test Engineering", 90000, 1),
+        ("Engineering Lead", 140000, 1),
+        ("Government Contracts", 120000, 2),
+        ("Private Contracts", 110000, 2),
+        ("Hydraulic Assembly", 55000, 3),
+        ("Electrical Assembly", 55000, 3),
+        ("Assembly Lead", 75000, 3),
+        ("Customer Service", 80000, 4),
+        ("Financial Planning", 80000, 4),
+        ("Service Technician", 75000, 4);
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES  ("Anthony", "Maddatu", 1, null),
