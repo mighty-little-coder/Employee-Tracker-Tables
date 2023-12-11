@@ -11,7 +11,7 @@ const db = mysql.createConnection(
     // MySQL username,
     user: 'root',
     // TODO: Add MySQL password here
-    password: 'taSh2.0!',
+    password: '',
     database: 'employeeTracker_db'
   },
   console.log(`Connected to the Employee Structure database.`)
