@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3001;
 const db = mysql.createConnection(
   {
     host: 'localhost',
-    // MySQL username,
+    // MySQL login information,
     user: 'root',
     password: '',
     database: 'employeeTracker_db'
@@ -98,126 +98,126 @@ function initialPrompt() {
 };
 
 // Response functions according to initial prompt
-
 async function viewEmp() {
   try {
-
+const query = 'SELECT * FROM employee';
+initialPrompt();
   } catch (error) {
     console.error(error);
   }
 };
 
-async function addEmp() {
-  try {
+// async function addEmp() {
+//   try {
 
-  } catch (error) {
-    console.error(error);
-  }
-};
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 
-async function delEmp() {
-  try {
+// async function delEmp() {
+//   try {
 
-  } catch (error) {
-    console.error(error);
-  }
-};
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 
-async function viewRoles() {
-  try {
+// async function viewRoles() {
+//   try {
 
-  } catch (error) {
-    console.error(error);
-  }
-};
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 
-async function addRole() {
-  try {
+// async function addRole() {
+//   try {
 
-  } catch (error) {
-    console.error(error);
-  }
-};
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 
-async function delRole() {
-  try {
+// async function delRole() {
+//   try {
 
-  } catch (error) {
-    console.error(error);
-  }
-};
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 
-async function updateEmpMan() {
-  try {
+// async function updateEmpMan() {
+//   try {
 
-  } catch (error) {
-    console.error(error);
-  }
-};
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 
-async function viewEmpMan() {
-  try {
+// async function viewEmpMan() {
+//   try {
 
-  } catch (error) {
-    console.error(error);
-  }
-};
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 
-async function viewEmpDep() {
-  try {
+// async function viewEmpDep() {
+//   try {
 
-  } catch (error) {
-    console.error(error);
-  }
-};
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 
-async function updateEmpRole() {
-  try {
+// async function updateEmpRole() {
+//   try {
 
-  } catch (error) {
-    console.error(error);
-  }
-};
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 
-async function viewDep() {
-  try {
+// async function viewDep() {
+//   try {
 
-  } catch (error) {
-    console.error(error);
-  }
-};
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 
-async function addDep() {
-  try {
+// async function addDep() {
+//   try {
 
-  } catch (error) {
-    console.error(error);
-  }
-};
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 
-async function delDep() {
-  try {
+// async function delDep() {
+//   try {
 
-  } catch (error) {
-    console.error(error);
-  }
-};
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 
-async function depUtilization() {
-  try {
+// async function depUtilization() {
+//   try {
 
-  } catch (error) {
-    console.error(error);
-  }
-};
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 
-async function quit() {
-  try {
+// async function quit() {
+//   try {
 
-  } catch (error) {
-    console.error(error);
-  }
-};
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 
 
 initialPrompt();
