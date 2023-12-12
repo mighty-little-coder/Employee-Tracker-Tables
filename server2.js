@@ -43,10 +43,8 @@ const start = [
 ];
 
 // Function to handle inquirer prompts and user selections
-function initialPrompt() {
-  inquirer
-    .prompt(start)
-    .then((input) => {
+async function initialPrompt() {
+    const input = await inquirer.prompt(start)
       switch (input.initialPrompt) {
         case 'View All Employees':
           viewEmp();
@@ -58,7 +56,7 @@ function initialPrompt() {
           delEmp();
           break;
         case 'View All Roles':
-          viewRoles();
+          console.table (await getRoles());
           break;
         case 'Add Role':
           addRole();
@@ -94,8 +92,7 @@ function initialPrompt() {
           quit();
           break;
       }
-    });
-};
+    };
 
 // Response functions according to initial prompt
 async function viewEmp() {
@@ -124,30 +121,15 @@ async function viewEmp() {
 //   }
 // };
 
-async function viewRoles() {
+async function getRoles() {
   try {
-    db.query ('SELECT * FROM role', function (err, results) {
-        if (err) {
-          throw err;
-        }
-        console.table(results)
-    })
+    const results = await db.query ('SELECT * FROM role')
+        return (results[0])
   } catch (error) { 
     console.error(error);
   }
   initialPrompt();
 };
-
-async function getRoles() {
-  try {
-    const results = await db.query('SELECT id, title FROM roles');
-    return results[0].map(({ title, id }) => ({ name: title, value: id }));
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-}
-
 
 // async function addRole() {
 //   try {
