@@ -23,21 +23,21 @@ const start = [
     name: 'initialPrompt',
     message: 'What would you like to do?',
     choices: [
-              'View All Employees',
+              'View All Employees',//--
               'Add Employee',
               // 'Delete Employee',
-              'View All Roles',
+              'View All Roles',//--
               'Add Role',
               // 'Delete Role',
               // 'Update Employee Managers',
               // 'View Employees by Manager',
               // 'View Employees by Department',
               'Update Employee Role',
-              'View All Departments',
+              'View All Departments',//--
               'Add Department',
               // 'Delete Department',
               // 'View Total Utilized Budget per Department',
-              'Quit'
+              'Quit'//--
              ],
   },
 ];
@@ -142,6 +142,17 @@ async function viewRoles() {
   initialPrompt();
 };
 
+async function getRoles() {
+  try {
+    const results = await db.query('SELECT id, title FROM roles');
+    return results[0].map(({ title, id }) => ({ name: title, value: id }));
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+
 // async function addRole() {
 //   try {
 
@@ -152,20 +163,20 @@ async function viewRoles() {
 
 
 // ---------------------------------------------UNDER CONSTRUCTION-----------------------------------------------------
-async function delRole() {
-  const selectDelRole = await getRoles()
-  try {
-    db.query ('DELETE FROM role WHERE id = ?', function (err, results) {
-        if (err) {
-          throw err;
-        }
-        console.table(results)
-    })
-  } catch (error) { 
-    console.error(error);
-  }
-  initialPrompt();
-};
+// async function delRole() {
+//   const selectDelRole = await getRoles()
+//   try {
+//     db.query ('DELETE FROM role WHERE id = ?', function (err, results) {
+//         if (err) {
+//           throw err;
+//         }
+//         console.table(results)
+//     })
+//   } catch (error) { 
+//     console.error(error);
+//   }
+//   initialPrompt();
+// };
 // ---------------------------------------------UNDER CONSTRUCTION-----------------------------------------------------
 
 
@@ -217,7 +228,43 @@ async function viewDep() {
 
 // async function addDep() {
 //   try {
-
+//   function addDep() {
+//     inquirer
+//         .prompt({
+//             type: "input",
+//             name: "newDepName",
+//             message: "Enter the title of the new department:",
+//         })
+//         .then((answer) => {
+//             console.log(answer.name);
+//             const query = `INSERT INTO department (department_name) VALUES ("${answer.name}")`;
+//             connection.query(query, (err, res) => {
+//                 if (err) throw err;
+//                 console.log(`Added department ${answer.name} to the database!`);
+//                 // restart the application
+//                 start();
+//                 console.log(answer.name);
+//             });
+//         });
+// }
+//--------------------------------------------------------------------------------
+async function addDep() {
+  try {
+    const response = await inquirer.prompt({
+      type: 'input',
+      name: 'newDepName',
+      message: 'Enter the name of the new department:',
+    });
+    console.log(response.newDepName);
+    const query = `INSERT INTO department(name) VALUES ("${response.newDepName}")`;
+    const [res] = await db.query(query);
+    console.log(`Added department ${response.newDepName} to the database!`);
+  } catch (err) {
+    console.error(err);
+  }
+  initialPrompt();
+};
+//--------------------------------------------------------------------------------
 //   } catch (error) {
 //     console.error(error);
 //   }
@@ -239,30 +286,28 @@ async function viewDep() {
 //   }
 // };
 
-// async function quit() {
-//   try {
-
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
+// Quit
+function quit() {
+  console.log('Were you impressed?');
+  process.exit();
+};
 
 
 // ---------------------------------------------UNDER CONSTRUCTION-----------------------------------------------------
 // Helper Functions
 // Get list of roles
-async function getRoles() {
-  try {
-    const results = await db.query('SELECT * FROM roles');
-    return results[0].map((role) => ({
-      name: role.title,
-      value: role.id
-    }));
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-};
+// async function getRoles() {
+//   try {
+//     const results = await db.query('SELECT * FROM roles');
+//     return results[0].map((role) => ({
+//       name: role.title,
+//       value: role.id
+//     }));
+//   } catch (error) {
+//     console.error(error);
+//     return [];
+//   }
+// };
 // ---------------------------------------------UNDER CONSTRUCTION-----------------------------------------------------
 
 
