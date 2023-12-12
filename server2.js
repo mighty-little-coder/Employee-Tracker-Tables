@@ -47,7 +47,7 @@ async function initialPrompt() {
     const input = await inquirer.prompt(start)
       switch (input.initialPrompt) {
         case 'View All Employees':
-          viewEmp();
+          console.table (await getRoles());
           break;
         case 'Add Employee':
           addEmp();
@@ -77,7 +77,7 @@ async function initialPrompt() {
           updateEmpRole();
           break;
         case 'View All Departments':
-          viewDep();
+          console.table (await getDep());
           break;
         case 'Add Department':
           addDep();
@@ -95,11 +95,11 @@ async function initialPrompt() {
     };
 
 // Response functions according to initial prompt
-async function viewEmp() {
+async function getEmp() {
   try {
     const results = await db.query ('SELECT * FROM employee')
-        console.table(results)
-  } catch (error) {
+        return (results[0])
+  } catch (error) { 
     console.error(error);
   }
   initialPrompt();
@@ -190,7 +190,8 @@ async function getRoles() {
 //   }
 // };
 
-async function viewDep() {
+
+async function getDep() {
     try {
       const results = await db.query ('SELECT * FROM department')
           console.table(results[0])
@@ -200,7 +201,7 @@ async function viewDep() {
     initialPrompt();
   };
 
-//--------------------------------------------------------------------------------
+//-------------------------------------------------------------------
 async function addDep() {
   try {
     const response = await inquirer.prompt({
@@ -217,8 +218,7 @@ async function addDep() {
   }
   initialPrompt();
 };
-//-------------------------------------------------------------------------------
-
+//-------------------------------------------------------------------
 
 // async function delDep() {
 //   try {
