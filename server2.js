@@ -111,7 +111,6 @@ async function viewEmp() {
   }
   initialPrompt();
 };
-    
 
 // async function addEmp() {
 //   try {
@@ -129,19 +128,19 @@ async function viewEmp() {
 //   }
 // };
 
-  async function viewRoles() {
-    try {
-      db.query ('SELECT * FROM role', function (err, results) {
-          if (err) {
-            throw err;
-          }
-          console.table(results)
-      })
-    } catch (error) {
-      console.error(error);
-    }
-    initialPrompt();
-  };
+async function viewRoles() {
+  try {
+    db.query ('SELECT * FROM role', function (err, results) {
+        if (err) {
+          throw err;
+        }
+        console.table(results)
+    })
+  } catch (error) { 
+    console.error(error);
+  }
+  initialPrompt();
+};
 
 // async function addRole() {
 //   try {
@@ -151,13 +150,24 @@ async function viewEmp() {
 //   }
 // };
 
-// async function delRole() {
-//   try {
 
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
+// ---------------------------------------------UNDER CONSTRUCTION-----------------------------------------------------
+async function delRole() {
+  const selectDelRole = await getRoles()
+  try {
+    db.query ('DELETE FROM role WHERE id = ?', function (err, results) {
+        if (err) {
+          throw err;
+        }
+        console.table(results)
+    })
+  } catch (error) { 
+    console.error(error);
+  }
+  initialPrompt();
+};
+// ---------------------------------------------UNDER CONSTRUCTION-----------------------------------------------------
+
 
 // async function updateEmpMan() {
 //   try {
@@ -236,6 +246,24 @@ async function viewDep() {
 //     console.error(error);
 //   }
 // };
+
+
+// ---------------------------------------------UNDER CONSTRUCTION-----------------------------------------------------
+// Helper Functions
+// Get list of roles
+async function getRoles() {
+  try {
+    const results = await db.query('SELECT * FROM roles');
+    return results[0].map((role) => ({
+      name: role.title,
+      value: role.id
+    }));
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
+// ---------------------------------------------UNDER CONSTRUCTION-----------------------------------------------------
 
 
 initialPrompt();
