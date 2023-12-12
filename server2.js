@@ -47,7 +47,7 @@ function initialPrompt() {
   inquirer
     .prompt(start)
     .then((input) => {
-      switch (input.start) {
+      switch (input.initialPrompt) {
         case 'View All Employees':
           viewEmp();
           break;
@@ -100,12 +100,18 @@ function initialPrompt() {
 // Response functions according to initial prompt
 async function viewEmp() {
   try {
-const query = 'SELECT * FROM employee';
-initialPrompt();
+    db.query ('SELECT * FROM employee', function (err, results) {
+        if (err) {
+          throw err;
+        }
+        console.table(results)
+    })
   } catch (error) {
     console.error(error);
   }
+  initialPrompt();
 };
+    
 
 // async function addEmp() {
 //   try {
@@ -123,13 +129,19 @@ initialPrompt();
 //   }
 // };
 
-// async function viewRoles() {
-//   try {
-
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
+  async function viewRoles() {
+    try {
+      db.query ('SELECT * FROM role', function (err, results) {
+          if (err) {
+            throw err;
+          }
+          console.table(results)
+      })
+    } catch (error) {
+      console.error(error);
+    }
+    initialPrompt();
+  };
 
 // async function addRole() {
 //   try {
@@ -179,13 +191,19 @@ initialPrompt();
 //   }
 // };
 
-// async function viewDep() {
-//   try {
-
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
+async function viewDep() {
+  try {
+    db.query ('SELECT * FROM department', function (err, results) {
+        if (err) {
+          throw err;
+        }
+        console.table(results)
+    })
+  } catch (error) {
+    console.error(error);
+  }
+  initialPrompt();
+};
 
 // async function addDep() {
 //   try {

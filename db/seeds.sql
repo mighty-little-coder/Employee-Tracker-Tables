@@ -45,24 +45,9 @@ VALUES  ("Anthony", "Maddatu", 1, null),
         ("Shantrell", "Jenkins", 10, null);
 
 UPDATE employee
-SET manager_id = CASE
-    WHEN role_id = 1
-    THEN (SELECT id FROM employee WHERE role_id = 4)
-    WHEN role_id = 2
-    THEN (SELECT id FROM employee WHERE role_id = 4)
-    WHEN role_id = 3
-    THEN (SELECT id FROM employee WHERE role_id = 4)
-    WHEN role_id = 7
-    THEN (SELECT id FROM employee WHERE role_id = 9)
-    WHEN role_id = 8
-    THEN (SELECT id FROM employee WHERE role_id = 9)
-    ELSE NULL
-END;
+SET manager_id = 4
+WHERE role_id IN (1, 2, 3);
 
--- UPDATE [LOW_PRIORITY] [IGNORE] table_reference
---     SET assignment_list
---     [WHERE where_condition]
---     [ORDER BY ...]
---     [LIMIT row_count]
--- value:
---     {expr | DEFAULT}
+UPDATE employee
+SET manager_id = 9
+WHERE role_id IN (7, 8);
