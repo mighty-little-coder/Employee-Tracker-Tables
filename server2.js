@@ -23,21 +23,21 @@ const start = [
     name: 'initialPrompt',
     message: 'What would you like to do?',
     choices: [
-      'View All Employees',//--
-      'Add Employee',
+      'View All Employees',//
+      'Add Employee',//
       // 'Delete Employee',
-      'View All Roles',//--
-      'Add Role',
+      'View All Roles',//
+      'Add Role',//
       // 'Delete Role',
       // 'Update Employee Managers',
       // 'View Employees by Manager',
       // 'View Employees by Department',
       'Update Employee Role',
-      'View All Departments',//--
-      'Add Department',
+      'View All Departments',//
+      'Add Department',//
       // 'Delete Department',
       // 'View Total Utilized Budget per Department',
-      'Quit'//--
+      'Quit'
     ],
   },
 ];
@@ -245,13 +245,18 @@ async function addRole() {
 //   }
 // };
 
-// async function updateEmpRole() {
-//   try {
+async function updateEmpRole() {
+  try {
+    const emp = await getEmp();
+    const role = await getRole();
+    const dep = await getDep();
+    const man = await getMan();
+    
 
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
+  } catch (error) {
+    console.error(error);
+  }
+};
 
 
 async function getDep() {
@@ -355,3 +360,5 @@ async function manList() {
 };
 
 initialPrompt();
+
+// ADD FIVE STAR RATING IF SATISFIED.
