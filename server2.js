@@ -23,95 +23,132 @@ const start = [
     name: 'initialPrompt',
     message: 'What would you like to do?',
     choices: [
-              'View All Employees',//--
-              'Add Employee',
-              // 'Delete Employee',
-              'View All Roles',//--
-              'Add Role',
-              // 'Delete Role',
-              // 'Update Employee Managers',
-              // 'View Employees by Manager',
-              // 'View Employees by Department',
-              'Update Employee Role',
-              'View All Departments',//--
-              'Add Department',
-              // 'Delete Department',
-              // 'View Total Utilized Budget per Department',
-              'Quit'//--
-             ],
+      'View All Employees',//--
+      'Add Employee',
+      // 'Delete Employee',
+      'View All Roles',//--
+      'Add Role',
+      // 'Delete Role',
+      // 'Update Employee Managers',
+      // 'View Employees by Manager',
+      // 'View Employees by Department',
+      'Update Employee Role',
+      'View All Departments',//--
+      'Add Department',
+      // 'Delete Department',
+      // 'View Total Utilized Budget per Department',
+      'Quit'//--
+    ],
   },
 ];
 
 // Function to handle inquirer prompts and user selections
 async function initialPrompt() {
-    const input = await inquirer.prompt(start)
-      switch (input.initialPrompt) {
-        case 'View All Employees':
-          console.table (await getRoles());
-          break;
-        case 'Add Employee':
-          addEmp();
-          break;
-        case 'Delete Employee':
-          delEmp();
-          break;
-        case 'View All Roles':
-          console.table (await getRoles());
-          break;
-        case 'Add Role':
-          addRole();
-          break;
-        case 'Delete Role':
-          delRole();
-          break;
-        case 'Update Employee Managers':
-          updateEmpMan();
-          break;
-        case 'View Employees By Manager':
-          viewEmpMan();
-          break;
-        case 'View Employees By Department':
-          viewEmpDep();
-          break;
-        case 'Update Employee Role':
-          updateEmpRole();
-          break;
-        case 'View All Departments':
-          console.table (await getDep());
-          break;
-        case 'Add Department':
-          addDep();
-          break;
-        case 'Delete Department':
-          delDep();
-          break;
-        case 'View Total Utilized Budget per Department':
-          depUtilization();
-          break;
-        case 'Quit':
-          quit();
-          break;
-      }
-    };
+  const input = await inquirer.prompt(start)
+  switch (input.initialPrompt) {
+    case 'View All Employees':
+      console.table(await getEmp());
+      initialPrompt();
+      break;
+    case 'Add Employee':
+      addEmp();
+      break;
+    case 'Delete Employee':
+      delEmp();
+      break;
+    case 'View All Roles':
+      console.table(await getRoles());
+      initialPrompt();
+      break;
+    case 'Add Role':
+      addRole();
+      break;
+    case 'Delete Role':
+      delRole();
+      break;
+    case 'Update Employee Managers':
+      updateEmpMan();
+      break;
+    case 'View Employees By Manager':
+      viewEmpMan();
+      break;
+    case 'View Employees By Department':
+      viewEmpDep();
+      break;
+    case 'Update Employee Role':
+      updateEmpRole();
+      break;
+    case 'View All Departments':
+      console.table(await getDep());
+      initialPrompt();
+      break;
+    case 'Add Department':
+      addDep();
+      break;
+    case 'Delete Department':
+      delDep();
+      break;
+    case 'View Total Utilized Budget per Department':
+      depUtilization();
+      break;
+    case 'Quit':
+      quit();
+      break;
+  }
+};
 
 // Response functions according to initial prompt
 async function getEmp() {
   try {
-    const results = await db.query ('SELECT * FROM employee')
-        return (results[0])
-  } catch (error) { 
+    const results = await db.query('SELECT * FROM employee')
+    return (results[0])
+  } catch (error) {
     console.error(error);
+  }
+};
+
+async function addEmp() {
+  try {
+    const listRoles = roleList
+    const listMans = manList
+    const response = await inquirer.prompt([
+      {
+        type: 'input',
+        message: 'Enter the first name of the new employee:',
+        name: 'newEmpFirst'
+      },
+      {
+        type: 'input',
+        message: 'Enter the last name of the new employee:',
+        name: 'newEmpLast'
+      },
+      {
+        type: 'list',
+        message: 'Select the role of the new employee:',
+        name: 'newEmpRole',
+        choices: listRoles
+      },
+      {
+        type: 'list',
+        message: 'Select the new employee\'s manager.',
+        name: 'newEmpMan',
+        choices: listMans
+      }
+    ]);
+    const query = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`;
+    const values = [
+      response.newEmpFirst,
+      response.newEmpLast,
+      response.newEmpRole,
+      response.newEmpMan,
+    ];
+    const [res] = await db.query(query, values);
+    console.log(`Added a new employee to the database!`);
+  } catch (err) {
+    console.error(err);
   }
   initialPrompt();
 };
-
-// async function addEmp() {
-//   try {
-
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
 
 // async function delEmp() {
 //   try {
@@ -123,22 +160,48 @@ async function getEmp() {
 
 async function getRoles() {
   try {
-    const results = await db.query ('SELECT * FROM role')
-        return (results[0])
-  } catch (error) { 
+    const results = await db.query('SELECT * FROM role')
+    return (results[0])
+  } catch (error) {
     console.error(error);
+  }
+};
+
+async function addRole() {
+  try {
+    const listDep = depList
+    const response = await inquirer.prompt([
+      {
+        type: 'input',
+        name: 'newRoleTitle',
+        message: 'Enter the title of the new role:',
+      },
+      {
+        type: 'input',
+        name: 'newRoleSal',
+        message: 'Enter the salary associated with the new role:',
+      },
+      {
+        type: 'list',
+        name: 'newRoleDep',
+        message: 'Enter the department of the new role:',
+        choices: listDep,
+      }
+    ]);
+    console.log(response.newRoleTitle);
+    const query = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`;
+    const values = [
+      response.newRoleTitle,
+      response.newRoleSal,
+      response.newRoleDep,
+    ];
+    const [res] = await db.query(query, values);
+    console.log(`Added role ${response.newRoleTitle} to the database!`);
+  } catch (err) {
+    console.error(err);
   }
   initialPrompt();
 };
-
-// async function addRole() {
-//   try {
-
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
-
 
 // ---------------------------------------------UNDER CONSTRUCTION-----------------------------------------------------
 // async function delRole() {
@@ -192,16 +255,14 @@ async function getRoles() {
 
 
 async function getDep() {
-    try {
-      const results = await db.query ('SELECT * FROM department')
-          console.table(results[0])
-    } catch (error) {
-      console.error(error);
-    }
-    initialPrompt();
-  };
+  try {
+    const results = await db.query('SELECT * FROM department')
+    console.table(results[0])
+  } catch (error) {
+    console.error(error);
+  }
+};
 
-//-------------------------------------------------------------------
 async function addDep() {
   try {
     const response = await inquirer.prompt({
@@ -218,7 +279,6 @@ async function addDep() {
   }
   initialPrompt();
 };
-//-------------------------------------------------------------------
 
 // async function delDep() {
 //   try {
@@ -236,29 +296,62 @@ async function addDep() {
 //   }
 // };
 
-// Quit
 function quit() {
   console.log('Were you impressed?');
   process.exit();
 };
 
-
-// ---------------------------------------------UNDER CONSTRUCTION-----------------------------------------------------
-// Helper Functions
 // Get list of roles
-// async function getRoles() {
-//   try {
-//     const results = await db.query('SELECT * FROM roles');
-//     return results[0].map((role) => ({
-//       name: role.title,
-//       value: role.id
-//     }));
-//   } catch (error) {
-//     console.error(error);
-//     return [];
-//   }
-// };
-// ---------------------------------------------UNDER CONSTRUCTION-----------------------------------------------------
+async function roleList() {
+  try {
+    const query = 'SELECT * FROM role';
+    const [results] = await db.query(query);
 
+    return results.map((role) => ({
+      name: role.title,
+      value: role.id,
+    }));
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
+
+// Get list of departments
+async function depList() {
+  try {
+    const query = 'SELECT * FROM department';
+    const [results] = await db.query(query);
+
+    return results.map((department) => ({
+      name: department.title,
+      value: department.id,
+    }));
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
+
+// Get list of department managers
+async function manList() {
+  try {
+    const results = await db.query('SELECT * FROM employee');
+    const managers = results[0].map((employee) => ({
+      name: `${employee.first_name} ${employee.last_name}`,
+      value: employee.id,
+    }));
+
+    // Option for null manager
+    managers.unshift({
+      name: 'No manager',
+      value: null,
+    });
+    return managers;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
 
 initialPrompt();
