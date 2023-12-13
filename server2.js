@@ -76,7 +76,7 @@ async function initialPrompt() {
       viewEmpDep();
       break;
     case 'Update Employee Role':
-      updateEmpRole();
+      updateEmp();
       break;
     case 'View All Departments':
       console.table(await getDep());
@@ -169,7 +169,7 @@ async function getRoles() {
 
 async function addRole() {
   try {
-    const listDep = depList
+    const listDep = await depList();
     const response = await inquirer.prompt([
       {
         type: 'input',
@@ -245,19 +245,93 @@ async function addRole() {
 //   }
 // };
 
-async function updateEmpRole() {
+async function updateEmp() {
   try {
-    const emp = await getEmp();
-    const role = await getRole();
-    const dep = await getDep();
-    const man = await getMan();
-    
+    const listEmp = await empList();
+    const listDep = await depList();
+    const listRoles = await roleList();
+    const listMan = await manList();
+    const response = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'updateEmp',
+        message: 'Select and employee to update:',
+        choices:listEmp,
+      },
+      {
+        type: 'list',
+        name: 'updateEmpOptions',
+        message: 'Select employee attribute to update:',
+        choices: ['Department', 'Role', 'Salary', 'Manager']
+      },
+    ]);
 
+    const { updateEmpOptions, updateEmp } = await inquirer.prompt(response);
+    switch (updateEmpOptions) {
+
+      // UPDATE EMPLOYEE ROLE
+      case 'Role':
+        const { updateEmpRole } = await inquirer.prompt([
+          {
+            type: 'list',
+            message: 'Select the employees new role:',
+            name: 'updateEmpRole',
+            choices: listRoles
+          }
+        ]);
+        await empRoleUpdate(updateEmp, updateEmpRole);
+        console.log('Modified employee role in database.');
+        break;
+
+      // UPDATE EMPLOYEE SALARY
+      case 'Salary':
+        const { updateEmpSal } = await inquirer.prompt([
+          {
+            type: 'input',
+            message: 'Update the selected employee\'s salary:',
+            name: 'updateEmpSal',
+          }
+        ]);
+        await empSalUpdate(updateEmp, updateEmpSal);
+        console.log('Modified the selected employee\'s salary in database.');
+        break;
+
+      // UPDATE EMPLOYEE DEPARTMENT
+      case 'Department':
+        const { updateEmpDep } = await inquirer.prompt([
+          {
+            type: 'list',
+            message: 'Update the selected employee\'s department:',
+            name: 'updateEmpDep',
+            choices: listDep,
+          }
+        ]);
+        await empDepUpdate(updateEmp, updateEmpDep);
+        console.log('Modified employee department in database.');
+        break;
+
+      // UPDATE EMPLOYEE MANAGER
+      case 'Manager':
+        const { updateEmpMan } = await inquirer.prompt([
+          {
+            type: 'list',
+            message: 'Select the employees new manager:',
+            name: 'updateEmpMan',
+            choices: listMan,
+          }
+        ]);
+        await empManUpdate(updateEmp, updateEmpMan);
+        console.log('Modified employee\'s manager in the database.');
+        break;
+      default:
+        console.log('Invalid selection');
+        break;
+    }
   } catch (error) {
     console.error(error);
   }
+  initialPrompt();
 };
-
 
 async function getDep() {
   try {
@@ -304,6 +378,22 @@ async function addDep() {
 function quit() {
   console.log('Were you impressed?');
   process.exit();
+};
+
+// Get list of employees
+async function empList() {
+  try {
+    const query = 'SELECT * FROM employee';
+    const [results] = await db.query(query);
+
+    return results.map((employee) => ({
+      name: employee.name,
+      value: `${employee.first_name} ${employee.last_name}`,
+    }));
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 };
 
 // Get list of roles
