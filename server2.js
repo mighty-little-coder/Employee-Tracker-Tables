@@ -292,7 +292,7 @@ async function updateEmp() {
             name: 'updateEmpSal',
           }
         ]);
-        await empSalUpdate(empToUpdate, updateEmpSal);
+        await empSalUpdate();
         console.log('Modified the selected employee\'s salary in database.');
         break;
 
@@ -455,6 +455,17 @@ async function empManUpdate(empToUpdate, updateEmpMan) {
   try {
     const statement = 'UPDATE employee SET manager_id = ? WHERE id = ?';
     const values = [updateEmpMan, empToUpdate];
+    await db.query(statement, values);
+  }
+  catch (error) {
+    console.error(error);
+  }
+};
+
+async function empSalUpdate(empToUpdate, updateEmpSal) {
+  try {
+    const statement = 'UPDATE role SET salary = ? WHERE id = ?';
+    const values = [updateEmpSal, empToUpdate];
     await db.query(statement, values);
   }
   catch (error) {
