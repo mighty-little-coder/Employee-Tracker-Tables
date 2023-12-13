@@ -251,22 +251,22 @@ async function updateEmp() {
     const listDep = await depList();
     const listRoles = await roleList();
     const listMan = await manList();
-    const response = await inquirer.prompt([
+    const response = [
       {
         type: 'list',
-        name: 'updateEmp',
+        name: 'empToUpdate',
         message: 'Select and employee to update:',
-        choices:listEmp,
+        choices: listEmp,
       },
       {
         type: 'list',
         name: 'updateEmpOptions',
         message: 'Select employee attribute to update:',
-        choices: ['Department', 'Role', 'Salary', 'Manager']
+        choices: ['Role', 'Salary', 'Department', 'Manager']
       },
-    ]);
+    ];
 
-    const { updateEmpOptions, updateEmp } = await inquirer.prompt(response);
+    const { updateEmpOptions, empToUpdate } = await inquirer.prompt(response);
     switch (updateEmpOptions) {
 
       // UPDATE EMPLOYEE ROLE
@@ -279,7 +279,7 @@ async function updateEmp() {
             choices: listRoles
           }
         ]);
-        await empRoleUpdate(updateEmp, updateEmpRole);
+        await empRoleUpdate(empToUpdate, updateEmpRole);
         console.log('Modified employee role in database.');
         break;
 
@@ -292,7 +292,7 @@ async function updateEmp() {
             name: 'updateEmpSal',
           }
         ]);
-        await empSalUpdate(updateEmp, updateEmpSal);
+        await empSalUpdate(empToUpdate, updateEmpSal);
         console.log('Modified the selected employee\'s salary in database.');
         break;
 
@@ -306,7 +306,7 @@ async function updateEmp() {
             choices: listDep,
           }
         ]);
-        await empDepUpdate(updateEmp, updateEmpDep);
+        await empDepUpdate(empToUpdate, updateEmpDep);
         console.log('Modified employee department in database.');
         break;
 
@@ -320,7 +320,7 @@ async function updateEmp() {
             choices: listMan,
           }
         ]);
-        await empManUpdate(updateEmp, updateEmpMan);
+        await empManUpdate();
         console.log('Modified employee\'s manager in the database.');
         break;
       default:
@@ -446,6 +446,19 @@ async function manList() {
   } catch (error) {
     console.error(error);
     return [];
+  }
+};
+
+//----------------------------FINISH UPDATES-----------------------------
+
+async function empManUpdate(empToUpdate, updateEmpMan) {
+  try {
+    const statement = 'UPDATE employee SET manager_id = ? WHERE id = ?';
+    const values = [updateEmpMan, empToUpdate];
+    await db.query(statement, values);
+  }
+  catch (error) {
+    console.error(error);
   }
 };
 
