@@ -2,8 +2,6 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
 
-const PORT = process.env.PORT || 3001;
-
 // Connect to database
 const db = mysql.createConnection(
   {
@@ -37,7 +35,7 @@ const start = [
       'Add Department',//
       // 'Delete Department',
       // 'View Total Utilized Budget per Department',
-      'Quit'
+      'Quit'//
     ],
   },
 ];
@@ -95,7 +93,7 @@ async function initialPrompt() {
       quit();
       break;
   }
-};
+}
 
 // Response functions according to initial prompt
 async function getEmp() {
@@ -105,7 +103,7 @@ async function getEmp() {
   } catch (error) {
     console.error(error);
   }
-};
+}
 
 async function addEmp() {
   try {
@@ -148,7 +146,7 @@ async function addEmp() {
     console.error(err);
   }
   initialPrompt();
-};
+}
 
 // async function delEmp() {
 //   try {
@@ -165,7 +163,7 @@ async function getRoles() {
   } catch (error) {
     console.error(error);
   }
-};
+}
 
 async function addRole() {
   try {
@@ -201,7 +199,7 @@ async function addRole() {
     console.error(err);
   }
   initialPrompt();
-};
+}
 
 // ---------------------------------------------UNDER CONSTRUCTION-----------------------------------------------------
 // async function delRole() {
@@ -262,7 +260,7 @@ async function updateEmp() {
         type: 'list',
         name: 'updateEmpOptions',
         message: 'Select employee attribute to update:',
-        choices: ['Role', 'Salary', 'Department', 'Manager']
+        choices: ['Role', 'Department', 'Manager']
       },
     ];
 
@@ -279,21 +277,8 @@ async function updateEmp() {
             choices: listRoles
           }
         ]);
-        await empRoleUpdate(empToUpdate, updateEmpRole);
+        await empRoleUpdate();
         console.log('Modified employee role in database.');
-        break;
-
-      // UPDATE EMPLOYEE SALARY
-      case 'Salary':
-        const { updateEmpSal } = await inquirer.prompt([
-          {
-            type: 'input',
-            message: 'Update the selected employee\'s salary:',
-            name: 'updateEmpSal',
-          }
-        ]);
-        await empSalUpdate();
-        console.log('Modified the selected employee\'s salary in database.');
         break;
 
       // UPDATE EMPLOYEE DEPARTMENT
@@ -304,9 +289,15 @@ async function updateEmp() {
             message: 'Update the selected employee\'s department:',
             name: 'updateEmpDep',
             choices: listDep,
+          },
+          {
+            type: 'list',
+            message: 'Select the employees new role:',
+            name: 'updateEmpRole',
+            choices: listRoles
           }
         ]);
-        await empDepUpdate(empToUpdate, updateEmpDep);
+        await empDepUpdate();
         console.log('Modified employee department in database.');
         break;
 
@@ -331,7 +322,7 @@ async function updateEmp() {
     console.error(error);
   }
   initialPrompt();
-};
+}
 
 async function getDep() {
   try {
@@ -340,7 +331,7 @@ async function getDep() {
   } catch (error) {
     console.error(error);
   }
-};
+}
 
 async function addDep() {
   try {
@@ -357,7 +348,7 @@ async function addDep() {
     console.error(err);
   }
   initialPrompt();
-};
+}
 
 // async function delDep() {
 //   try {
@@ -377,8 +368,8 @@ async function addDep() {
 
 function quit() {
   console.log('Were you impressed?');
-  process.exit();
-};
+  process.exit()
+}
 
 // Get list of employees
 async function empList() {
@@ -394,7 +385,7 @@ async function empList() {
     console.error(error);
     return [];
   }
-};
+}
 
 // Get list of roles
 async function roleList() {
@@ -410,7 +401,23 @@ async function roleList() {
     console.error(error);
     return [];
   }
-};
+}
+
+// Get list of roles based on selected department
+async function roleListPerDep() {
+  try {
+    const query = 'SELECT * FROM role WHERE department_id = ? VALUES (?)';
+    const [results] = await db.query(query);
+
+    return results.map((role) => ({
+      name: role.title,
+      value: role.id,
+    }));
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
 
 // Get list of departments
 async function depList() {
@@ -426,7 +433,7 @@ async function depList() {
     console.error(error);
     return [];
   }
-};
+}
 
 // Get list of department managers
 async function manList() {
@@ -447,7 +454,7 @@ async function manList() {
     console.error(error);
     return [];
   }
-};
+}
 
 //----------------------------FINISH UPDATES-----------------------------
 
@@ -460,18 +467,29 @@ async function empManUpdate(empToUpdate, updateEmpMan) {
   catch (error) {
     console.error(error);
   }
-};
+}
 
-async function empSalUpdate(empToUpdate, updateEmpSal) {
+async function empRoleUpdate(empToUpdate, updateEmpRole) {
   try {
-    const statement = 'UPDATE role SET salary = ? WHERE id = ?';
-    const values = [updateEmpSal, empToUpdate];
+    const statement = 'UPDATE employee SET role_id = ? WHERE id = ?';
+    const values = [updateEmpRole, empToUpdate];
     await db.query(statement, values);
   }
   catch (error) {
     console.error(error);
   }
-};
+}
+
+async function empDepUpdate(empToUpdate, updateEmpDep) {
+  try {
+    const statement = 'UPDATE role SET department_id = ? WHERE id = ?';
+    const values = [updateEmpDep, empToUpdate];
+    await db.query(statement, values);
+  }
+  catch (error) {
+    console.error(error);
+  }
+}
 
 initialPrompt();
 
