@@ -1,4 +1,4 @@
-// Import and require mysql2
+// Import and require inquirer and mysql2
 const inquirer = require('inquirer');
 const mysql = require('mysql2');
 
@@ -105,6 +105,7 @@ async function getEmp() {
   }
 }
 
+// Function to create a new employee
 async function addEmp() {
   try {
     const listRoles = roleList
@@ -148,6 +149,7 @@ async function addEmp() {
   initialPrompt();
 }
 
+// Function to delete an employee from the database
 // async function delEmp() {
 //   try {
 
@@ -156,6 +158,7 @@ async function addEmp() {
 //   }
 // };
 
+// Function to gather information regarding all available roles
 async function getRoles() {
   try {
     const results = await db.query('SELECT * FROM role')
@@ -165,6 +168,7 @@ async function getRoles() {
   }
 }
 
+// Function to add a usable employee role
 async function addRole() {
   try {
     const listDep = await depList();
@@ -202,6 +206,7 @@ async function addRole() {
 }
 
 // ---------------------------------------------UNDER CONSTRUCTION-----------------------------------------------------
+// Function to delete an available role from the database as well as associated employees
 // async function delRole() {
 //   const selectDelRole = await getRoles()
 //   try {
@@ -218,15 +223,7 @@ async function addRole() {
 // };
 // ---------------------------------------------UNDER CONSTRUCTION-----------------------------------------------------
 
-
-// async function updateEmpMan() {
-//   try {
-
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
-
+// Function to view employees by manager
 // async function viewEmpMan() {
 //   try {
 
@@ -235,6 +232,7 @@ async function addRole() {
 //   }
 // };
 
+// Function to view all employees by department
 // async function viewEmpDep() {
 //   try {
 
@@ -243,6 +241,7 @@ async function addRole() {
 //   }
 // };
 
+// Function to update an employee's information
 async function updateEmp() {
   try {
     const listEmp = await empList();
@@ -267,7 +266,7 @@ async function updateEmp() {
     const { updateEmpOptions, empToUpdate } = await inquirer.prompt(response);
     switch (updateEmpOptions) {
 
-      // UPDATE EMPLOYEE ROLE
+      // Update the role an employee is associated with
       case 'Role':
         const { updateEmpRole } = await inquirer.prompt([
           {
@@ -281,7 +280,7 @@ async function updateEmp() {
         console.log('Modified employee role in database.');
         break;
 
-      // UPDATE EMPLOYEE DEPARTMENT
+      // Update the department an employee is associated with
       case 'Department':
         const { updateEmpDep } = await inquirer.prompt([
           {
@@ -301,7 +300,7 @@ async function updateEmp() {
         console.log('Modified employee department in database.');
         break;
 
-      // UPDATE EMPLOYEE MANAGER
+      // Update an employee's manager
       case 'Manager':
         const { updateEmpMan } = await inquirer.prompt([
           {
@@ -317,13 +316,14 @@ async function updateEmp() {
       default:
         console.log('Invalid selection');
         break;
-    }
+    } 
   } catch (error) {
     console.error(error);
   }
   initialPrompt();
 }
 
+// Function to gather information regarding all available departments
 async function getDep() {
   try {
     const results = await db.query('SELECT * FROM department')
@@ -333,6 +333,7 @@ async function getDep() {
   }
 }
 
+// Function to create new department
 async function addDep() {
   try {
     const response = await inquirer.prompt({
@@ -350,6 +351,7 @@ async function addDep() {
   initialPrompt();
 }
 
+// Function to delete an available department from the database as well as associated employees
 // async function delDep() {
 //   try {
 
@@ -358,6 +360,7 @@ async function addDep() {
 //   }
 // };
 
+// Function to display fund utilization per department
 // async function depUtilization() {
 //   try {
 
@@ -456,8 +459,7 @@ async function manList() {
   }
 }
 
-//----------------------------FINISH UPDATES-----------------------------
-
+// Update an employee manager
 async function empManUpdate(empToUpdate, updateEmpMan) {
   try {
     const statement = 'UPDATE employee SET manager_id = ? WHERE id = ?';
@@ -469,6 +471,7 @@ async function empManUpdate(empToUpdate, updateEmpMan) {
   }
 }
 
+// Update an employee role
 async function empRoleUpdate(empToUpdate, updateEmpRole) {
   try {
     const statement = 'UPDATE employee SET role_id = ? WHERE id = ?';
@@ -480,6 +483,7 @@ async function empRoleUpdate(empToUpdate, updateEmpRole) {
   }
 }
 
+// Update an employee department and role
 async function empDepUpdate(empToUpdate, updateEmpDep) {
   try {
     const statement = 'UPDATE role SET department_id = ? WHERE id = ?';
@@ -491,6 +495,5 @@ async function empDepUpdate(empToUpdate, updateEmpDep) {
   }
 }
 
+// Starts initial questions at the end of each run of script
 initialPrompt();
-
-// ADD FIVE STAR RATING IF SATISFIED.
