@@ -23,7 +23,7 @@ const start = [
     choices: [
       'View All Employees',//
       'Add Employee',//
-      // 'Delete Employee',
+      'Delete Employee',
       'View All Roles',//
       'Add Role',//
       // 'Delete Role',
@@ -150,13 +150,27 @@ async function addEmp() {
 }
 
 // Function to delete an employee from the database
-// async function delEmp() {
-//   try {
+async function delEmp() {
+  try {
+    const listEmp = await empList()
+    const response = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'empToDel',
+        message: 'Select the employee to remove from the database:',
+        choices: listEmp
+      },
+    ]);
+    const empSelect = response.empToDel;
+    const query = 'DELETE FROM employee WHERE id = ?';
+    const results = await db.query(query, [empSelect]);
 
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
+    console.log(`${empSelect} was successfully removed from the database.`);
+  } catch (error) {
+    console.error('Error deleting row:', error);
+  }
+  initialPrompt();
+}
 
 // Function to gather information regarding all available roles
 async function getRoles() {
@@ -207,6 +221,7 @@ async function addRole() {
 
 // ---------------------------------------------UNDER CONSTRUCTION-----------------------------------------------------
 // Function to delete an available role from the database as well as associated employees
+
 // async function delRole() {
 //   const selectDelRole = await getRoles()
 //   try {
@@ -276,27 +291,32 @@ async function updateEmp() {
             choices: listRoles
           }
         ]);
-        await empRoleUpdate();
+        await empRoleUpdate(updateEmpRole, empToUpdate);
         console.log('Modified employee role in database.');
         break;
 
       // Update the department an employee is associated with
       case 'Department':
-        const { updateEmpDep } = await inquirer.prompt([
+        const { updateEmpDepId } = await inquirer.prompt([
           {
             type: 'list',
             message: 'Update the selected employee\'s department:',
-            name: 'updateEmpDep',
+            name: 'updateEmpDepId',
             choices: listDep,
           },
+        ]);
+        console.log(updateEmpDepId)
+        const depId = await roleListPerDep(updateEmpDepId)
+        console.log(depId)
+        const { updateEmpDep } = await inquirer.prompt([
           {
             type: 'list',
             message: 'Select the employees new role:',
-            name: 'updateEmpRole',
-            choices: listRoles
+            name: 'updateEmpDep',
+            choices: depId
           }
-        ]);
-        await empDepUpdate();
+        ])
+        await empDepUpdate(updateEmpDep, empToUpdate);
         console.log('Modified employee department in database.');
         break;
 
@@ -316,7 +336,7 @@ async function updateEmp() {
       default:
         console.log('Invalid selection');
         break;
-    } 
+    }
   } catch (error) {
     console.error(error);
   }
@@ -381,14 +401,28 @@ async function empList() {
     const [results] = await db.query(query);
 
     return results.map((employee) => ({
-      name: employee.name,
-      value: `${employee.first_name} ${employee.last_name}`,
+      name: `${employee.first_name} ${employee.last_name}`,
+      value: employee.id,
     }));
   } catch (error) {
     console.error(error);
     return [];
   }
 }
+// async function empIdList() {
+//   try {
+//     const query = 'SELECT id FROM employee WHERE ';
+//     const [results] = await db.query(query);
+
+//     return results.map((employee) => ({
+//       name: employee.id,
+//       value: `${employee.first_name} ${employee.last_name}`,
+//     }));
+//   } catch (error) {
+//     console.error(error);
+//     return [];
+//   }
+// }
 
 // Get list of roles
 async function roleList() {
@@ -407,20 +441,18 @@ async function roleList() {
 }
 
 // Get list of roles based on selected department
-async function roleListPerDep() {
+async function roleListPerDep(dept) {
   try {
-    const query = 'SELECT * FROM role WHERE department_id = ? VALUES (?)';
-    const [results] = await db.query(query);
-
-    return results.map((role) => ({
-      name: role.title,
-      value: role.id,
-    }));
+    const query = 'SELECT role.title FROM role WHERE department_id = ?';
+    const values = [dept]
+    const [results] = await db.query(query, values);
+    return results.map(role => role.title);
   } catch (error) {
     console.error(error);
     return [];
   }
 }
+
 
 // Get list of departments
 async function depList() {
@@ -472,7 +504,7 @@ async function empManUpdate(empToUpdate, updateEmpMan) {
 }
 
 // Update an employee role
-async function empRoleUpdate(empToUpdate, updateEmpRole) {
+async function empRoleUpdate(updateEmpRole, empToUpdate) {
   try {
     const statement = 'UPDATE employee SET role_id = ? WHERE id = ?';
     const values = [updateEmpRole, empToUpdate];
@@ -484,7 +516,7 @@ async function empRoleUpdate(empToUpdate, updateEmpRole) {
 }
 
 // Update an employee department and role
-async function empDepUpdate(empToUpdate, updateEmpDep) {
+async function empDepUpdate(updateEmpDep, empToUpdate) {
   try {
     const statement = 'UPDATE role SET department_id = ? WHERE id = ?';
     const values = [updateEmpDep, empToUpdate];
