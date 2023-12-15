@@ -259,6 +259,7 @@ async function delRole() {
 
 
 // Function to update an employee's information
+// Function to update an employee's information
 async function updateEmp() {
   try {
     const listEmp = await empList();
@@ -307,16 +308,16 @@ async function updateEmp() {
             choices: listDep,
           },
         ]);
-        const depId = await roleListPerDep(updateEmpDepId)
+        const depId = await roleListPerDep(updateEmpDepId);
         const { updateEmpDep } = await inquirer.prompt([
           {
             type: 'list',
-            message: 'Select the employees new role:',
+            message: 'Select the employees new department:',
             name: 'updateEmpDep',
             choices: depId
           }
-        ])
-        await empRoleUpdate(updateEmpDep, empToUpdate);
+        ]);
+        await empDepUpdate(updateEmpDep, empToUpdate);
         console.log('Modified employee department in database.');
         break;
 
@@ -330,7 +331,7 @@ async function updateEmp() {
             choices: listMan,
           }
         ]);
-        await empManUpdate();
+        await empManUpdate(updateEmpMan, empToUpdate);
         console.log('Modified employee\'s manager in the database.');
         break;
       default:
@@ -515,7 +516,7 @@ async function empRoleUpdate(updateEmpRole, empToUpdate) {
 // Update an employee department and role
 async function empDepUpdate(updateEmpDep, empToUpdate) {
   try {
-    const statement = 'UPDATE role SET department_id = ? WHERE id = ?';
+    const statement = 'UPDATE employee SET role_id = (SELECT id FROM role WHERE title = ?) WHERE id = ?';
     const values = [updateEmpDep, empToUpdate];
     await db.query(statement, values);
   }
@@ -523,6 +524,7 @@ async function empDepUpdate(updateEmpDep, empToUpdate) {
     console.error(error);
   }
 }
+
 
 // Starts initial questions at the end of each run of script
 initialPrompt();
