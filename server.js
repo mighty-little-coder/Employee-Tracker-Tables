@@ -22,13 +22,12 @@ const start = [
     message: 'What would you like to do?',
     choices: [
       'View All Employees',//
+      'View Employees By Manager | Department',
       'Add Employee',//
       'Delete Employee',//
       'View All Roles',//
       'Add Role',//
       'Delete Role',//
-      // 'View Employees by Manager',
-      // 'View Employees by Department',
       'Update Employee Role | Department | Manager',//
       'View All Departments',//
       'Add Department',//
@@ -47,6 +46,9 @@ async function initialPrompt() {
       console.table(await getEmp());
       initialPrompt();
       break;
+    case 'View Employees By Manager | Department':
+      viewEmpFilter();
+      break;
     case 'Add Employee':
       addEmp();
       break;
@@ -62,12 +64,6 @@ async function initialPrompt() {
       break;
     case 'Delete Role':
       delRole();
-      break;
-    case 'View Employees By Manager | Department':
-      viewEmpMan();
-      break;
-    case 'View Employees By Department':
-      viewEmpDep();
       break;
     case 'Update Employee Role | Department | Manager':
       updateEmp();
@@ -237,55 +233,95 @@ async function delRole() {
   initialPrompt();
 }
 
+
+
+// --------------------------------------------------------------------------------------------
+
+
+
+
+// Function to handle employee filtering options
+async function viewEmpFilter() {
+  try {
+    const response = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'empFilter',
+        message: 'Select filter to view employees by:',
+        choices: ['By Department', 'By Manager'],
+      },
+    ]);
+
+    switch (response.empFilter) {
+      case 'By Department':
+        await viewEmpDep();
+        break;
+
+      case 'By Manager':
+        await viewEmpMan();
+        break;
+
+      default:
+        console.log('Invalid selection');
+        break;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 // Function to filter employees by department
-async function filterEmpDep() {
+async function viewEmpDep() {
   try {
     const listDep = await depList();
     const response = await inquirer.prompt([
       {
         type: 'list',
-        message: 'Select the department to apply as a filter:',
         name: 'empDepFilter',
+        message: 'Select the department to apply as a filter:',
         choices: listDep,
-      }
+      },
     ]);
-    const empDepFilter = response.empDepFilter;
-    const filterEmpDep = await getEmpByDep(depFilter);
-    console.table(filterEmpDep);
-  } catch (err) {
-    console.error(err);
+
+    const depFilter = response.depFilter;
+    const employees = await getEmpFilterDep(depFilter);
+    console.table(employees);
+
+  } catch (error) {
+    console.error(error);
   } finally {
     initialPrompt();
   }
 }
 
 // Function to filter employees by manager
-  async function filterEmpMan() {
-    try {
-      const listMan = await manList();
-      const response = await inquirer.prompt([
-        {
-          type: 'list',
-          message: 'Select the manager to apply as a filter:',
-          name: 'empManFilter',
-          choices: listMan,
-        }
-      ]);
-      const empManFilter = response.empManFilter;
-      const filterEmpMan = await getEmpByMan(manFilter);
-      console.table(filterEmpMan);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      initialPrompt();
-    }
-  }
+async function viewEmpMan() {
+  try {
+    const listMan = await manList();
+    const response = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'EmpManFilter',
+        message: 'Select the manager to filter employees:',
+        choices: listMan,
+      },
+    ]);
 
-// Function to render filterEmpDep
-async function viewEmpDep(depId) {
+    const empManFilter = response.empManFilter;
+    console.log(empManFilter)
+    const employees = await getEmpFilterMan(empManFilter);
+    console.table(employees);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    initialPrompt();
+  }
+}
+
+async function getEmpFilterDep(departmentId) {
   try {
     const query = 'SELECT * FROM employee WHERE role_id = (SELECT id FROM role WHERE department_id = ?)';
-    const [results] = await db.query(query, [depId]);
+    const [results] = await db.query(query, [departmentId]);
     return results;
   } catch (error) {
     console.error(error);
@@ -294,17 +330,95 @@ async function viewEmpDep(depId) {
 }
 
 
-// Function to render filterEmpMan
-async function viewEmpDep(manId) {
+async function getEmpFilterMan(departmentId) {
   try {
-    const query = 'SELECT * FROM employee WHERE role_id = (SELECT id FROM role WHERE manager_id = ?)';
-    const [results] = await db.query(query, [manId]);
+    const query = 'SELECT * FROM employee WHERE manager_id = ?';
+    const [results] = await db.query(query, [departmentId]);
     return results;
   } catch (error) {
     console.error(error);
     return [];
   }
 }
+
+// --------------------------------------------------------------------------------------------
+
+
+
+// // Function to filter employees by department
+// async function filterEmpDep() {
+//   try {
+//     const listDep = await depList();
+//     const response = await inquirer.prompt([
+//       {
+//         type: 'list',
+//         message: 'Select the department to apply as a filter:',
+//         name: 'empDepFilter',
+//         choices: listDep,
+//       }
+//     ]);
+//     const empDepFilter = response.empDepFilter;
+//     const filterEmpDep = await getEmpByDep(depFilter);
+//     console.table(filterEmpDep);
+//   } catch (err) {
+//     console.error(err);
+//   } finally {
+//     initialPrompt();
+//   }
+// }
+
+// // Function to filter employees by manager
+//   async function filterEmpMan() {
+//     try {
+//       const listMan = await manList();
+//       const response = await inquirer.prompt([
+//         {
+//           type: 'list',
+//           message: 'Select the manager to apply as a filter:',
+//           name: 'empManFilter',
+//           choices: listMan,
+//         }
+//       ]);
+//       const empManFilter = response.empManFilter;
+//       const filterEmpMan = await getEmpByMan(manFilter);
+//       console.table(filterEmpMan);
+//     } catch (err) {
+//       console.error(err);
+//     } finally {
+//       initialPrompt();
+//     }
+//   }
+
+// // Function to render filterEmpDep
+// async function viewEmpDep(depId) {
+//   try {
+//     const query = 'SELECT * FROM employee WHERE role_id = (SELECT id FROM role WHERE department_id = ?)';
+//     const [results] = await db.query(query, [depId]);
+//     return results;
+//   } catch (error) {
+//     console.error(error);
+//     return [];
+//   }
+// }
+
+
+// // Function to render filterEmpMan
+// async function viewEmpDep(manId) {
+//   try {
+//     const query = 'SELECT * FROM employee WHERE role_id = (SELECT id FROM role WHERE manager_id = ?)';
+//     const [results] = await db.query(query, [manId]);
+//     return results;
+//   } catch (error) {
+//     console.error(error);
+//     return [];
+//   }
+// }
+
+
+
+// --------------------------------------------------------------------------------------------
+
+
 
 //   try {
 //     const listEmp = await empList();
