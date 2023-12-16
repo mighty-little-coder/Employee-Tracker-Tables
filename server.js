@@ -29,10 +29,10 @@ const start = [
       'Delete Role',//
       // 'View Employees by Manager',
       // 'View Employees by Department',
-      'Update Employee Role | Department | Manager',
+      'Update Employee Role | Department | Manager',//
       'View All Departments',//
       'Add Department',//
-      // 'Delete Department',
+      'Delete Department',//
       // 'View Total Utilized Budget per Department',
       'Quit'//
     ],
@@ -63,7 +63,7 @@ async function initialPrompt() {
     case 'Delete Role':
       delRole();
       break;
-    case 'View Employees By Manager':
+    case 'View Employees By Manager | Department':
       viewEmpMan();
       break;
     case 'View Employees By Department':
@@ -200,7 +200,6 @@ async function addRole() {
         choices: listDep,
       }
     ]);
-    console.log(response.newRoleTitle);
     const query = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`;
     const values = [
       response.newRoleTitle,
@@ -208,7 +207,7 @@ async function addRole() {
       response.newRoleDep,
     ];
     const [res] = await db.query(query, values);
-    console.log(`Added role ${response.newRoleTitle} to the database!`);
+    console.log(`Added the "${response.newRoleTitle}" role to the database!`);
   } catch (err) {
     console.error(err);
   }
@@ -230,7 +229,6 @@ async function delRole() {
     const roleSelect = response.roleToDel;
     const query = 'DELETE FROM role WHERE id = ?';
     const results = await db.query(query, [roleSelect]);
-
     console.log(`Role was successfully removed from the database.`);
     // console.log(`${roleSelect} was successfully removed from the database.`);
   } catch (error) {
@@ -239,15 +237,117 @@ async function delRole() {
   initialPrompt();
 }
 
-// Function to view employees by manager
-// async function viewEmpMan() {
+// Function to filter employees by department
+async function filterEmpDep() {
+  try {
+    const listDep = await depList();
+    const response = await inquirer.prompt([
+      {
+        type: 'list',
+        message: 'Select the department to apply as a filter:',
+        name: 'empDepFilter',
+        choices: listDep,
+      }
+    ]);
+    const empDepFilter = response.empDepFilter;
+    const filterEmpDep = await getEmpByDep(depFilter);
+    console.table(filterEmpDep);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    initialPrompt();
+  }
+}
+
+// Function to filter employees by manager
+  async function filterEmpMan() {
+    try {
+      const listMan = await manList();
+      const response = await inquirer.prompt([
+        {
+          type: 'list',
+          message: 'Select the manager to apply as a filter:',
+          name: 'empManFilter',
+          choices: listMan,
+        }
+      ]);
+      const empManFilter = response.empManFilter;
+      const filterEmpMan = await getEmpByMan(manFilter);
+      console.table(filterEmpMan);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      initialPrompt();
+    }
+  }
+
+// Function to render filterEmpDep
+async function viewEmpDep(depId) {
+  try {
+    const query = 'SELECT * FROM employee WHERE role_id = (SELECT id FROM role WHERE department_id = ?)';
+    const [results] = await db.query(query, [depId]);
+    return results;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+
+// Function to render filterEmpMan
+async function viewEmpDep(manId) {
+  try {
+    const query = 'SELECT * FROM employee WHERE role_id = (SELECT id FROM role WHERE manager_id = ?)';
+    const [results] = await db.query(query, [manId]);
+    return results;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
 //   try {
+//     const listEmp = await empList();
+//     const listDep = await depList();
+//     const listRoles = await roleList();
+//     const listMan = await manList();
+//     const response = [
+//       {
+//         type: 'list',
+//         name: 'viewEmp',
+//         message: 'Select filter to view employees by:',
+//         choices: ['By department', 'By manager']
+//       },
+//     ]
+//     const empFilter = await inquirer.prompt(response);
+//     switch (viewEmp) {
 
-//   } catch (error) {
-//     console.error(error);
+//       // View employees by department filter
+//       case 'By department':
+//         const { empDepFilter } = await inquirer.prompt([
+//           {
+//             type: 'list',
+//             message: 'Select the department to apply as a filter:',
+//             name: 'empDepFilter',
+//             choices: listDep,
+//           }
+//         ]);
+//         async function getEmpFilterDep() {
+//           try {
+//             const results = await db.query('SELECT * FROM employee where role_id = (SELECT * FROM role WHERE department_id = ?) VALUES = ?')
+//             return (results[0])
+//           }
+//           catch (error) {
+//             console.error(error);
+//           }};
+//           // const depFilterId = await empListPerDep(empDepFilter);
+//           // console.table(await getEmpFilterDep());
+//           // initialPrompt();
+//           // console.log()
+//         }
+
 //   }
-// };
-
+// }
 // Function to view all employees by department
 // async function viewEmpDep() {
 //   try {
@@ -257,8 +357,6 @@ async function delRole() {
 //   }
 // };
 
-
-// Function to update an employee's information
 // Function to update an employee's information
 async function updateEmp() {
   try {
@@ -373,13 +471,28 @@ async function addDep() {
 }
 
 // Function to delete an available department from the database as well as associated employees
-// async function delDep() {
-//   try {
+async function delDep() {
+  try {
+    const listDep = await depList()
+    const response = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'depToDel',
+        message: 'Select the department to be removed from the database:',
+        choices: listDep
+      },
+    ]);
+    const depSelect = response.depToDel;
+    const query = 'DELETE FROM department WHERE id = ?';
+    const results = await db.query(query, [depSelect]);
 
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
+    console.log(`${response.depToDel} was successfully removed from the database.`);
+    console.log(`Department was successfully removed from the database.`);
+  } catch (error) {
+    console.error('Error deleting role:', error);
+  }
+  initialPrompt();
+}
 
 // Function to display fund utilization per department
 // async function depUtilization() {
@@ -490,7 +603,7 @@ async function manList() {
 }
 
 // Update an employee manager
-async function empManUpdate(empToUpdate, updateEmpMan) {
+async function empManUpdate(updateEmpMan, empToUpdate) {
   try {
     const statement = 'UPDATE employee SET manager_id = ? WHERE id = ?';
     const values = [updateEmpMan, empToUpdate];
