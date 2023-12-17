@@ -14,6 +14,7 @@ const db = mysql.createConnection(
   console.log(`Connected to the Employee Structure database.`)
 ).promise();
 
+
 // Start menu
 const start = [
   {
@@ -59,6 +60,7 @@ async function initialPrompt() {
       break;
   }
 }
+
 
 // Gather Functions
 // Response functions according to initial prompt
@@ -172,7 +174,7 @@ async function manList() {
       name: `${employee.first_name} ${employee.last_name}`,
       value: employee.id,
     }));
-    
+
     // Option for null manager
     managers.unshift({
       name: 'No manager',
@@ -183,6 +185,26 @@ async function manList() {
     console.error(error);
     return [];
   }
+}
+
+
+// Create functions
+// Function to create new department
+async function addDep() {
+  try {
+    const response = await inquirer.prompt({
+      type: 'input',
+      name: 'newDepName',
+      message: 'Enter the name of the new department:',
+    });
+    console.log(response.newDepName);
+    const query = `INSERT INTO department(name) VALUES ("${response.newDepName}")`;
+    const [res] = await db.query(query);
+    console.log(`Added department ${response.newDepName} to the database!`);
+  } catch (err) {
+    console.error(err);
+  }
+  initialPrompt();
 }
 
 
@@ -267,10 +289,6 @@ async function delDep() {
   }
   initialPrompt();
 }
-
-
-
-
 
 
 // Prompt Functions
@@ -402,8 +420,6 @@ async function addEmp() {
   initialPrompt();
 }
 
-
-
 // Function to add a usable employee role
 async function addRole() {
   try {
@@ -439,8 +455,6 @@ async function addRole() {
   }
   initialPrompt();
 }
-
-
 
 // Function to handle employee filtering options
 async function viewEmpFilter() {
@@ -629,26 +643,6 @@ async function updateEmp() {
   initialPrompt();
 }
 
-
-// Function to create new department
-async function addDep() {
-  try {
-    const response = await inquirer.prompt({
-      type: 'input',
-      name: 'newDepName',
-      message: 'Enter the name of the new department:',
-    });
-    console.log(response.newDepName);
-    const query = `INSERT INTO department(name) VALUES ("${response.newDepName}")`;
-    const [res] = await db.query(query);
-    console.log(`Added department ${response.newDepName} to the database!`);
-  } catch (err) {
-    console.error(err);
-  }
-  initialPrompt();
-}
-
-
 // Function to display fund utilization per department
 async function depUtilization() {
   try {
@@ -684,6 +678,7 @@ function quit() {
 }
 
 
+// Update Functions
 // Update an employee manager
 async function empManUpdate(updateEmpMan, empToUpdate) {
   try {
