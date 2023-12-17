@@ -53,6 +53,10 @@ For en example, see the attached video file:<br>
 ![Employee Tracker Application in action!](./media/employee_tracker_demo.mp4)
 
 
+https://github.com/mighty-little-coder/Employee-Tracker-Tables/assets/144641610/258d3608-bfe4-4f64-b999-192acfd3bc4d
+
+
+
 ## Features
 
 Within this application, there are options to view, add, delete, filter, and update the various tables within the schema file using pre-set information stored in the seeds file. This includes the ability to have the application calculate the entirety of the company's resources being allocated to a single department (This was a bonus for the project).
