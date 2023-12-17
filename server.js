@@ -21,8 +21,9 @@ const start = [
     name: 'initialPrompt',
     message: 'What would you like to do?',
     choices: [
+      'View All Employees | Roles | Departments',
       'View All Employees',
-      'View Employees By Manager | Department',
+      'Filter Employees By Manager | Department',
       'Add Employee',
       'Delete Employee',
       'View All Roles',
@@ -42,11 +43,14 @@ const start = [
 async function initialPrompt() {
   const input = await inquirer.prompt(start)
   switch (input.initialPrompt) {
-    case 'View All Employees':
-      console.table(await getEmp());
-      initialPrompt();
+    case 'View All Employees | Roles | Departments':
+      viewOptions();
       break;
-    case 'View Employees By Manager | Department':
+    // case 'View All Employees':
+    //   console.table(await getEmp());
+    //   initialPrompt();
+    //   break;
+    case 'Filter Employees By Manager | Department':
       viewEmpFilter();
       break;
     case 'Add Employee':
@@ -92,6 +96,40 @@ async function getEmp() {
   try {
     const results = await db.query('SELECT * FROM employee')
     return (results[0])
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+
+// Condensed function for viewing selected tables
+async function viewOptions() {
+  try {
+    const initialResponse = await inquirer.prompt([{
+      input: 'list',
+      name: 'viewList',
+      message: 'Select a table to view it\'s contents:',
+      choices: [
+        'View all Employees',
+        'View all Roles',
+        'View all Departments',
+      ]
+    }
+    ]);
+    switch (initialResponse.viewList) {
+      case 'View all Employees':
+        await console.table(await getEmp());
+        initialPrompt();
+        break;
+      case 'View all Roles':
+        console.table(await getRoles());
+        initialPrompt();
+        break;
+      case 'View All Departments':
+        console.table(await getDep());
+        initialPrompt();
+        break;
+    }
   } catch (error) {
     console.error(error);
   }
