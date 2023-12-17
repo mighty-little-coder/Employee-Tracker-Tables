@@ -50,7 +50,7 @@ To view the finished product, clone the repository from my GitHub repository at 
 Click the <code>Code</code> button on the top right of the repository area, select the <code>SSH</code> option. This will copy the SSH link to your clipboard. In your CLI, input <code>git clone git@github.com:mighty-little-coder/Employee-Tracker-Tables.git</code> to download the working files for this project.<br>
 Now in the terminal, run the command <code>node server.js</code> and follow the prompts based on your desired input.<br>
 For en example, see the attached video file:<br>
-![Employee Tracker Application in action!]
+![Employee Tracker Application in action!](./media/employee_tracker_demo.mp4)
 
 
 ## Features
