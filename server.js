@@ -21,19 +21,19 @@ const start = [
     name: 'initialPrompt',
     message: 'What would you like to do?',
     choices: [
-      'View All Employees',//
-      'View Employees By Manager | Department',//
-      'Add Employee',//
-      'Delete Employee',//
-      'View All Roles',//
-      'Add Role',//
-      'Delete Role',//
-      'Update Employee Role | Department | Manager',//
-      'View All Departments',//
-      'Add Department',//
-      'Delete Department',//
-      // 'View Total Utilized Budget per Department',
-      'Quit'//
+      'View All Employees',
+      'View Employees By Manager | Department',
+      'Add Employee',
+      'Delete Employee',
+      'View All Roles',
+      'Add Role',
+      'Delete Role',
+      'Update Employee Role | Department | Manager',
+      'View All Departments',
+      'Add Department',
+      'Delete Department',
+      'View Total Utilized Budget per Department',
+      'Quit'
     ],
   },
 ];
@@ -210,23 +210,28 @@ async function addRole() {
   initialPrompt();
 }
 
+
 // Function to delete an available role from the database as well as associated employees
 async function delRole() {
   try {
-    const listRole = await roleList()
+    const listRole = await roleList();
     const response = await inquirer.prompt([
       {
         type: 'list',
         name: 'roleToDel',
         message: 'Select the role to be removed from the database:',
-        choices: listRole
+        choices: listRole,
       },
     ]);
+
     const roleSelect = response.roleToDel;
-    const query = 'DELETE FROM role WHERE id = ?';
-    const results = await db.query(query, [roleSelect]);
-    console.log(`Role was successfully removed from the database.`);
-    // console.log(`${roleSelect} was successfully removed from the database.`);
+    const deleteEmployeesQuery = 'DELETE FROM employee WHERE role_id = ?';
+    await db.query(deleteEmployeesQuery, [roleSelect]);
+
+    const deleteRoleQuery = 'DELETE FROM role WHERE id = ?';
+    await db.query(deleteRoleQuery, [roleSelect]);
+
+    console.log(`Role and associated employees were successfully removed from the database.`);
   } catch (error) {
     console.error('Error deleting role:', error);
   }
@@ -278,6 +283,7 @@ async function viewEmpDep() {
 
     const empDepFilter = response.empDepFilter;
     const employees = await getEmpFilterDep(empDepFilter);
+    console.log(employees);
     console.table(employees);
 
   } catch (error) {
@@ -447,39 +453,66 @@ async function addDep() {
   initialPrompt();
 }
 
-// Function to delete an available department from the database as well as associated employees
+// Function to delete an available department from the database as well as associated roles and employees
 async function delDep() {
   try {
-    const listDep = await depList()
+    const listDep = await depList();
     const response = await inquirer.prompt([
       {
         type: 'list',
         name: 'depToDel',
         message: 'Select the department to be removed from the database:',
-        choices: listDep
+        choices: listDep,
       },
     ]);
+    // Step 1: Delete employee from associated roles
     const depSelect = response.depToDel;
-    const query = 'DELETE FROM department WHERE id = ?';
-    const results = await db.query(query, [depSelect]);
+    const empDepSelectQuery = 'DELETE FROM employee WHERE role_id IN (SELECT id FROM role WHERE department_id = ?)'
+    await db.query(empDepSelectQuery, [depSelect]);
+    // Step 2: Delete roles within the department
+    const deleteRolesQuery = 'DELETE FROM role WHERE department_id = ?';
+    await db.query(deleteRolesQuery, [depSelect]);
 
-    console.log(`${response.depToDel} was successfully removed from the database.`);
-    console.log(`Department was successfully removed from the database.`);
+    // Step 3: Delete the department
+    const deleteDepQuery = 'DELETE FROM department WHERE id = ?';
+    await db.query(deleteDepQuery, [depSelect]);
+
+    console.log(`Department and associated roles were successfully removed from the database.`);
   } catch (error) {
-    console.error('Error deleting role:', error);
+    console.error('Error deleting department:', error);
   }
   initialPrompt();
 }
 
 // Function to display fund utilization per department
-// async function depUtilization() {
-//   try {
+async function depUtilization() {
+  try {
+    const listDep = await depList();
+    const response = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'depUtilSelect',
+        message: 'Select the department to calculate total resource utilization:',
+        choices: listDep,
+      },
+    ]);
+    const depUtilSelect = response.depUtilSelect;
+    const depUtilQuery =
+      `SELECT SUM(role.salary) AS depTotal
+      FROM employee
+      INNER JOIN role ON employee.role_id = role.id
+      WHERE role.department_id = ?`;
+    const [result] = await db.query(depUtilQuery, [depUtilSelect]);
+    const depTotal = result[0].depTotal || 0;
+    console.log(`Total salary for the selected department: $${depTotal}`);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    initialPrompt();
+  }
+}
 
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
-
+// Exits server
 function quit() {
   console.log('Were you impressed?');
   process.exit()
